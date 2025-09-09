@@ -18,6 +18,12 @@ just dev-up
 │   ├── package.json       # App dependencies
 │   └── Dockerfile         # Multi-stage build
 │
+├── admin/                  # 🎨 Admin Panel (Nuxt 3 + Shadcn/ui)
+│   ├── pages/             # Admin panel pages
+│   ├── components/        # UI components
+│   ├── composables/       # Auth & API logic
+│   └── Dockerfile         # Admin panel container
+│
 └── infrastructure/        # 🛠️ DevOps & Infrastructure (Complete)
     ├── .env.development   # Environment configurations
     ├── .env.production.example
@@ -31,6 +37,7 @@ just dev-up
 ## Philosophy
 
 - **App directory**: Pure application code - could be extracted to its own repository
+- **Admin directory**: Modern admin panel with authentication - connects to main API
 - **Infrastructure directory**: Complete DevOps environment - could be managed by platform team
 - **True separation**: Each domain is self-contained and focused
 

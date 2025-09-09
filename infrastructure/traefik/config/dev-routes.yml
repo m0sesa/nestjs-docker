@@ -36,6 +36,18 @@ http:
             sans:
               - "*.interestingapp.local"
 
+    # Admin Panel
+    admin-panel:
+      rule: "Host(`admin.interestingapp.local`)"
+      entryPoints:
+        - websecure
+      service: admin-panel
+      tls:
+        domains:
+          - main: "interestingapp.local"
+            sans:
+              - "*.interestingapp.local"
+
     # Traefik Dashboard
     traefik-dashboard:
       rule: "Host(`traefik.interestingapp.local`)"
@@ -65,6 +77,11 @@ http:
       loadBalancer:
         servers:
           - url: "http://adminer-dev:8080"
+
+    admin-panel:
+      loadBalancer:
+        servers:
+          - url: "http://admin-panel-dev:3000"
 
   middlewares:
     basic-auth:

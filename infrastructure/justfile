@@ -59,6 +59,22 @@ app-test-e2e:
     @echo "🧪 Running end-to-end tests..."
     @cd ../app && npm run test:e2e
 
+# Admin panel commands
+admin-install:
+    @echo "📦 Installing admin panel dependencies..."
+    @cd ../admin && npm install
+
+admin-dev:
+    @echo "🚀 Starting admin panel in development mode..."
+    @cd ../admin && npm run dev
+
+admin-build:
+    @echo "🔨 Building admin panel..."
+    @cd ../admin && npm run build
+
+admin-logs:
+    @docker logs admin-panel-dev -f
+
 # Utility commands
 clean:
     @echo "🧹 Cleaning up Docker resources..."
@@ -72,6 +88,14 @@ build:
 ssl-certs:
     @echo "🔐 Generating SSL certificates for development..."
     @cd traefik/certs && mkcert "*.interestingapp.local" interestingapp.local
+
+open-services:
+    @echo "🌐 Opening development services in browser..."
+    @open https://admin.interestingapp.local
+    @open https://api.interestingapp.local/api/docs
+    @open https://mail.interestingapp.local
+    @open https://pgadmin.interestingapp.local
+    @open https://traefik.interestingapp.local
 
 # Environment management
 env-setup:
@@ -104,8 +128,15 @@ help:
     @echo "  app-test      - Run application tests"
     @echo "  app-test-e2e  - Run end-to-end tests"
     @echo ""
+    @echo "🎨 Admin Panel:"
+    @echo "  admin-install - Install admin panel dependencies"
+    @echo "  admin-dev     - Start admin panel in development mode"
+    @echo "  admin-build   - Build admin panel"
+    @echo "  admin-logs    - View admin panel logs"
+    @echo ""
     @echo "🧹 Utilities:"
     @echo "  build         - Build production Docker images"
     @echo "  clean         - Clean up Docker resources"
     @echo "  ssl-certs     - Generate development SSL certificates"
+    @echo "  open-services - Open all development services in browser"
     @echo "  env-setup     - Create environment files from examples"

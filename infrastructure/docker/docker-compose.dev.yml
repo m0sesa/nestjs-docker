@@ -21,10 +21,8 @@ services:
   postgres:
     image: postgres:15-alpine
     container_name: postgres-dev
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=nestjs_dev
+    env_file:
+      - ../.env.development
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ../init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
@@ -41,12 +39,27 @@ services:
   adminer:
     image: adminer
     container_name: adminer-dev
-    environment:
-      - ADMINER_DEFAULT_SERVER=postgres
+    env_file:
+      - ../.env.development
     depends_on:
       - postgres
     networks:
       - app-network
+      - traefik-network
+
+  admin:
+    build:
+      context: ../../admin
+      target: development
+    container_name: admin-panel-dev
+    volumes:
+      - ../../admin:/app
+      - /app/node_modules
+    environment:
+      - API_URL=https://api.interestingapp.local
+    depends_on:
+      - app
+    networks:
       - traefik-network
 
   traefik:
