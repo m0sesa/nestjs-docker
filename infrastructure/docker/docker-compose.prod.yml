@@ -7,21 +7,8 @@ services:
       target: production
     container_name: nestjs-app-prod
     restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USERNAME=${DB_USERNAME:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_DATABASE=${DB_DATABASE:-nestjs_prod}
-      - JWT_SECRET=${JWT_SECRET}
-      - MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
-      - MAIL_PORT=${MAIL_PORT:-587}
-      - MAIL_USER=${MAIL_USER}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-NestJS App}
-      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
-      - FRONTEND_URL=${FRONTEND_URL}
+    env_file:
+      - ../.env.production
     depends_on:
       - postgres
     networks:

@@ -9,21 +9,8 @@ services:
     volumes:
       - ../../app:/app
       - /app/node_modules
-    environment:
-      - NODE_ENV=development
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=postgres
-      - DB_DATABASE=nestjs_dev
-      - JWT_SECRET=your-dev-jwt-secret-key
-      - MAIL_HOST=mailhog
-      - MAIL_PORT=1025
-      - MAIL_USER=test
-      - MAIL_PASSWORD=test
-      - MAIL_FROM_NAME=NestJS Dev App
-      - MAIL_FROM_ADDRESS=noreply@localhost
-      - FRONTEND_URL=https://app.interestingapp.local
+    env_file:
+      - ../.env.development
     depends_on:
       - postgres
       - mailhog
