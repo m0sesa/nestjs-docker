@@ -1,98 +1,188 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS Docker Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A production-ready NestJS application with JWT authentication, PostgreSQL, MailHog, Swagger, and Traefik reverse proxy.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+- ✅ **NestJS** with TypeScript
+- ✅ **JWT Authentication** with bcrypt password hashing
+- ✅ **PostgreSQL** database with TypeORM and UUID primary keys
+- ✅ **Email Service** with MailHog for development
+- ✅ **Swagger API Documentation** with JWT Bearer auth
+- ✅ **Traefik Reverse Proxy** with SSL/TLS
+- ✅ **Docker** multi-stage builds for development and production
+- ✅ **Professional development setup** with local HTTPS domains
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Quick Start
 
-## Project setup
+### Prerequisites
+
+- Docker & Docker Compose
+- [Just](https://github.com/casey/just) command runner
+- [mkcert](https://github.com/FiloSottile/mkcert) for development SSL certificates
 
 ```bash
-$ npm install
+# Install Just (macOS)
+brew install just
+
+# Install Just (Ubuntu)
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin
+
+# Install mkcert (macOS) 
+brew install mkcert
+
+# Install mkcert (Ubuntu)
+apt install mkcert
 ```
 
-## Compile and run the project
+### Development Setup
+
+1. **Start development environment:**
+   ```bash
+   just dev-up
+   ```
+
+2. **Add hosts entries** (when prompted):
+   ```bash
+   # Add to /etc/hosts
+   127.0.0.1 api.interestingapp.local
+   127.0.0.1 mail.interestingapp.local
+   127.0.0.1 pgadmin.interestingapp.local
+   127.0.0.1 traefik.interestingapp.local
+   ```
+
+3. **Access services:**
+   - 🚀 **API**: https://api.interestingapp.local
+   - 📧 **MailHog**: https://mail.interestingapp.local
+   - 🗄️ **Database Admin**: https://pgadmin.interestingapp.local
+   - 📊 **Traefik Dashboard**: https://traefik.interestingapp.local (admin/admin)
+   - 📖 **Swagger**: https://api.interestingapp.local/api
+
+### Production Setup
+
+1. **Create environment file:**
+   ```bash
+   cp .env.production.example .env.production
+   # Edit .env.production with your values
+   ```
+
+2. **Generate Traefik auth:**
+   ```bash
+   htpasswd -nb admin your-password
+   # Add result to TRAEFIK_AUTH in .env.production
+   ```
+
+3. **Start production environment:**
+   ```bash
+   source .env.production
+   just prod-up
+   ```
+
+## Available Commands
 
 ```bash
-# development
-$ npm run start
+# Development
+just dev-up        # Start development environment
+just dev-down      # Stop development environment  
+just dev-logs      # Follow development logs
+just dev-restart   # Restart development environment
 
-# watch mode
-$ npm run start:dev
+# Production
+just prod-up              # Start production (Traefik + App)
+just prod-down            # Stop production environment
+just prod-app-only        # Start only app (Traefik running separately)
+just prod-traefik-only    # Start only Traefik
+just prod-logs            # Follow production logs
 
-# production mode
-$ npm run start:prod
+# Utilities
+just build         # Build production images
+just clean         # Clean up Docker resources
+just ssl-certs     # Generate development SSL certificates
+just help          # Show all commands
 ```
 
-## Run tests
+## API Endpoints
 
+### Authentication
+- `POST /auth/register` - Register new user
+- `POST /auth/login` - Login user
+- `GET /auth/profile` - Get user profile (requires JWT)
+
+### Documentation
+- `GET /api` - Swagger UI
+- `GET /api-json` - OpenAPI JSON spec
+
+## Environment Variables
+
+### Development (.env.development)
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+NODE_ENV=development
+DB_HOST=postgres
+DB_PASSWORD=postgres
+JWT_SECRET=dev-jwt-secret-key
+MAIL_HOST=mailhog
+FRONTEND_URL=https://app.interestingapp.local
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+### Production (.env.production)
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+NODE_ENV=production
+DB_PASSWORD=your-secure-password
+JWT_SECRET=your-super-secure-jwt-key
+MAIL_HOST=smtp.gmail.com
+MAIL_USER=your-email@gmail.com
+DOMAIN=yourdomain.com
+ACME_EMAIL=admin@yourdomain.com
+TRAEFIK_AUTH=admin:$2y$10$...
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Architecture
 
-## Resources
+### Development Architecture
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Development Setup                        │
+├─────────────────────────────────────────────────────────────┤
+│  Traefik (Internal Network)                                │
+│  ├── api.interestingapp.local → NestJS App                 │
+│  ├── mail.interestingapp.local → MailHog UI                │
+│  ├── pgadmin.interestingapp.local → Adminer                │
+│  └── traefik.interestingapp.local → Traefik Dashboard      │
+│                                                             │
+│  Services:                                                  │
+│  ├── NestJS App (TypeScript hot reload)                    │
+│  ├── PostgreSQL with UUID extension                        │
+│  ├── MailHog (Email testing)                               │
+│  └── Adminer (Database management)                         │
+└─────────────────────────────────────────────────────────────┘
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### Production Architecture
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Production Setup                         │
+├─────────────────────────────────────────────────────────────┤
+│  Traefik (External Network)                                │
+│  ├── api.yourdomain.com → NestJS App                       │
+│  └── traefik.yourdomain.com → Dashboard (Basic Auth)       │
+│                                                             │
+│  Services:                                                  │
+│  ├── NestJS App (Optimized production build)               │
+│  ├── PostgreSQL (Persistent volumes)                       │
+│  └── Let's Encrypt SSL (Automatic certificates)            │
+└─────────────────────────────────────────────────────────────┘
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Security Features
 
-## Support
+- JWT tokens with configurable expiration
+- Bcrypt password hashing (10 rounds)
+- Input validation with class-validator
+- Environment-based configuration
+- Production security headers
+- SSL/TLS encryption in both dev and prod
+- Basic auth protection for Traefik dashboard
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Generated by Claude Code
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project structure and configuration were generated using [Claude Code](https://claude.ai/code), Anthropic's official CLI for Claude.

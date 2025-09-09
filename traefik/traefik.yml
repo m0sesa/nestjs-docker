@@ -1,0 +1,31 @@
+api:
+  dashboard: true
+  insecure: false
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    exposedByDefault: false
+    network: traefik-network
+  file:
+    directory: /config
+    watch: true
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      tlsChallenge: {}
+      email: ${ACME_EMAIL}
+      storage: /letsencrypt/acme.json
+
+# Global redirect to HTTPS (production)
+# http:
+#   redirections:
+#     entrypoint:
+#       to: websecure
+#       scheme: https

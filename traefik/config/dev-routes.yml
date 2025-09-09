@@ -1,0 +1,78 @@
+http:
+  routers:
+    # NestJS API
+    nestjs-api:
+      rule: "Host(`api.interestingapp.local`)"
+      entryPoints:
+        - websecure
+      service: nestjs-api
+      tls:
+        domains:
+          - main: "interestingapp.local"
+            sans:
+              - "*.interestingapp.local"
+
+    # MailHog Web UI
+    mailhog-ui:
+      rule: "Host(`mail.interestingapp.local`)"
+      entryPoints:
+        - websecure
+      service: mailhog-ui
+      tls:
+        domains:
+          - main: "interestingapp.local"
+            sans:
+              - "*.interestingapp.local"
+
+    # Adminer (Database Admin)
+    adminer:
+      rule: "Host(`pgadmin.interestingapp.local`)"
+      entryPoints:
+        - websecure
+      service: adminer
+      tls:
+        domains:
+          - main: "interestingapp.local"
+            sans:
+              - "*.interestingapp.local"
+
+    # Traefik Dashboard
+    traefik-dashboard:
+      rule: "Host(`traefik.interestingapp.local`)"
+      entryPoints:
+        - websecure
+      service: api@internal
+      tls:
+        domains:
+          - main: "interestingapp.local"
+            sans:
+              - "*.interestingapp.local"
+      middlewares:
+        - basic-auth
+
+  services:
+    nestjs-api:
+      loadBalancer:
+        servers:
+          - url: "http://nestjs-app-dev:3000"
+
+    mailhog-ui:
+      loadBalancer:
+        servers:
+          - url: "http://mailhog-dev:8025"
+
+    adminer:
+      loadBalancer:
+        servers:
+          - url: "http://adminer-dev:8080"
+
+  middlewares:
+    basic-auth:
+      basicAuth:
+        users:
+          - "admin:$2y$10$2b2cu2Fmp.Kf3/1Wnn7nUe.GrKGzHGYwB5X7TYgOnE6UQNnbqfKS2" # admin:admin
+
+tls:
+  certificates:
+    - certFile: /certs/interestingapp.local+1.pem
+      keyFile: /certs/interestingapp.local+1-key.pem

@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      target: development
+    container_name: nestjs-app-dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_DATABASE=nestjs_dev
+      - JWT_SECRET=your-dev-jwt-secret-key
+      - MAIL_HOST=mailhog
+      - MAIL_PORT=1025
+      - MAIL_USER=test
+      - MAIL_PASSWORD=test
+      - MAIL_FROM_NAME=NestJS Dev App
+      - MAIL_FROM_ADDRESS=noreply@localhost
+      - FRONTEND_URL=https://app.interestingapp.local
+    depends_on:
+      - postgres
+      - mailhog
+    networks:
+      - app-network
+      - traefik-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-dev
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=nestjs_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - app-network
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog-dev
+    networks:
+      - app-network
+      - traefik-network
+
+  adminer:
+    image: adminer
+    container_name: adminer-dev
+    environment:
+      - ADMINER_DEFAULT_SERVER=postgres
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+      - traefik-network
+
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik-dev
+    restart: unless-stopped
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/config:/config:ro
+      - ./traefik/certs:/certs:ro
+    networks:
+      - traefik-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
+  traefik-network:
+    driver: bridge
