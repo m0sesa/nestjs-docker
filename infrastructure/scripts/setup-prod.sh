@@ -42,11 +42,11 @@ if docker ps | grep -q "traefik"; then
     echo "✅ Traefik is already running"
 else
     echo "🐳 Starting Traefik..."
-    docker-compose -f docker-compose.traefik.yml up -d
+    docker-compose -f docker/docker-compose.traefik.yml up -d
 fi
 
 echo "🐳 Starting application..."
-docker-compose -f docker-compose.prod.yml up -d
+docker-compose -f docker/docker-compose.prod.yml up -d
 
 echo "✅ Production environment is ready!"
 echo "🔗 Available services:"

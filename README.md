@@ -12,6 +12,39 @@ A production-ready NestJS application with JWT authentication, PostgreSQL, MailH
 - ✅ **Traefik Reverse Proxy** with SSL/TLS
 - ✅ **Docker** multi-stage builds for development and production
 - ✅ **Professional development setup** with local HTTPS domains
+- ✅ **Clean project structure** with separated app and infrastructure concerns
+
+## Project Structure
+
+```
+/
+├── app/                           # NestJS Application
+│   ├── src/                       # Application source code
+│   │   ├── auth/                  # JWT authentication module
+│   │   ├── users/                 # User management module
+│   │   ├── mail/                  # Email service module
+│   │   └── main.ts                # Application entry point
+│   ├── package.json               # App dependencies
+│   ├── Dockerfile                 # Multi-stage Docker build
+│   └── tsconfig.json              # TypeScript configuration
+│
+├── infrastructure/                # Infrastructure & DevOps
+│   ├── docker/                    # Docker Compose files
+│   │   ├── docker-compose.dev.yml # Development environment
+│   │   ├── docker-compose.prod.yml# Production application
+│   │   └── docker-compose.traefik.yml # Traefik reverse proxy
+│   ├── traefik/                   # Traefik configuration
+│   │   ├── config/                # Routing configuration
+│   │   ├── certs/                 # SSL certificates (dev)
+│   │   └── traefik.yml            # Static configuration
+│   ├── scripts/                   # Setup and utility scripts
+│   └── justfile                   # Infrastructure commands
+│
+├── .env.example                   # Environment variables template
+├── .env.development               # Development configuration
+├── justfile                       # Main command interface
+└── README.md                      # Project documentation
+```
 
 ## Quick Start
 
@@ -81,24 +114,31 @@ apt install mkcert
 ## Available Commands
 
 ```bash
-# Development
-just dev-up        # Start development environment
+# Development Environment
+just dev-up        # Start development environment with HTTPS
 just dev-down      # Stop development environment  
 just dev-logs      # Follow development logs
 just dev-restart   # Restart development environment
 
-# Production
+# Production Environment
 just prod-up              # Start production (Traefik + App)
 just prod-down            # Stop production environment
 just prod-app-only        # Start only app (Traefik running separately)
 just prod-traefik-only    # Start only Traefik
 just prod-logs            # Follow production logs
 
+# Application Development (without Docker)
+just app-install   # Install application dependencies
+just app-dev       # Start app in development mode
+just app-build     # Build application
+just app-test      # Run application tests
+just app-test-e2e  # Run end-to-end tests
+
 # Utilities
-just build         # Build production images
-just clean         # Clean up Docker resources
+just build         # Build production Docker images
+just clean         # Clean up Docker resources  
 just ssl-certs     # Generate development SSL certificates
-just help          # Show all commands
+just help          # Show all commands with descriptions
 ```
 
 ## API Endpoints

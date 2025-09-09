@@ -39,7 +39,7 @@ if ! grep -q "api.interestingapp.local" /etc/hosts; then
 fi
 
 echo "🐳 Starting development environment..."
-docker-compose -f docker-compose.dev.yml up -d
+docker-compose -f docker/docker-compose.dev.yml up -d
 
 echo "✅ Development environment is ready!"
 echo "🔗 Available services:"

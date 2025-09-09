@@ -3,11 +3,11 @@ version: '3.8'
 services:
   app:
     build:
-      context: .
+      context: ../../app
       target: development
     container_name: nestjs-app-dev
     volumes:
-      - .:/app
+      - ../../app:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
@@ -40,7 +40,7 @@ services:
       - POSTGRES_DB=nestjs_dev
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ../init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - app-network
 
@@ -74,9 +74,9 @@ services:
       - "8080:8080"  # Dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
-      - ./traefik/config:/config:ro
-      - ./traefik/certs:/certs:ro
+      - ../traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ../traefik/config:/config:ro
+      - ../traefik/certs:/certs:ro
     networks:
       - traefik-network
 
