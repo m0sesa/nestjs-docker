@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
+import { MailService } from '../mail/mail.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -9,6 +10,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -22,6 +24,13 @@ export class AuthService {
       registerDto.email,
       registerDto.password,
     );
+
+    // Send welcome email
+    try {
+      await this.mailService.sendWelcomeEmail(user.email, user.username);
+    } catch (error) {
+      console.error('Failed to send welcome email:', error);
+    }
 
     const payload = { email: user.email, sub: user.id };
     return {
