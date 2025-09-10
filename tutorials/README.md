@@ -9,6 +9,7 @@ A complete monorepo with:
 - **PostgreSQL** database with TypeORM  
 - **Email service** with MailHog testing
 - **Swagger** API documentation
+- **Modern Admin Panel** with Nuxt 3 and Shadcn/ui
 - **Traefik** reverse proxy with SSL/TLS
 - **Professional development workflow** with Just runner
 - **Clean monorepo structure** separating app and infrastructure
@@ -42,6 +43,9 @@ A complete monorepo with:
 → [13-security-best-practices.md](./13-security-best-practices.md) - Security considerations  
 → [14-troubleshooting.md](./14-troubleshooting.md) - Common issues and solutions
 
+### **Phase 6: Extensions**
+→ [15-admin-panel.md](./15-admin-panel.md) - Modern admin panel with Nuxt 3 and Shadcn/ui
+
 ## 🚀 Quick Start
 
 If you want to jump straight to the final result:
@@ -53,6 +57,7 @@ just dev-up
 ```
 
 Access your services:
+- Admin Panel: https://admin.interestingapp.local
 - API: https://api.interestingapp.local
 - Mail: https://mail.interestingapp.local  
 - DB Admin: https://pgadmin.interestingapp.local
