@@ -27,6 +27,7 @@ fi
 # Check hosts file entries
 echo "🌐 Checking /etc/hosts entries..."
 HOSTS_ENTRIES="127.0.0.1 api.interestingapp.local
+127.0.0.1 admin.interestingapp.local
 127.0.0.1 mail.interestingapp.local
 127.0.0.1 pgadmin.interestingapp.local  
 127.0.0.1 traefik.interestingapp.local"
@@ -39,11 +40,12 @@ if ! grep -q "api.interestingapp.local" /etc/hosts; then
 fi
 
 echo "🐳 Starting development environment..."
-docker-compose -f docker/docker-compose.dev.yml up -d
+docker compose -f docker/docker-compose.dev.yml up -d
 
 echo "✅ Development environment is ready!"
 echo "🔗 Available services:"
-echo "   API: https://api.interestingapp.local"  
-echo "   Mail: https://mail.interestingapp.local"
-echo "   DB Admin: https://pgadmin.interestingapp.local"
-echo "   Traefik: https://traefik.interestingapp.local (admin/admin)"
+echo "   🎨 Admin Panel: https://admin.interestingapp.local"
+echo "   📱 API: https://api.interestingapp.local"  
+echo "   📧 Mail: https://mail.interestingapp.local"
+echo "   🗄️  DB Admin: https://pgadmin.interestingapp.local"
+echo "   🔀 Traefik: https://traefik.interestingapp.local (admin/admin)"

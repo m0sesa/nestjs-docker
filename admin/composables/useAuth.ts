@@ -2,176 +2,150 @@ import { jwtDecode } from 'jwt-decode'
 
 interface User {
   id: string
-  username: string
   email: string
-  createdAt: string
-  updatedAt: string
+  name: string
+  role: string
 }
 
-interface LoginCredentials {
-  email: string
-  password: string
-}
-
-interface AuthResponse {
+interface AuthTokens {
   access_token: string
-  user: User
+  refresh_token?: string
 }
 
-interface JWTPayload {
+interface DecodedToken {
   sub: string
   email: string
-  iat: number
+  name: string
+  role: string
   exp: number
 }
 
 export const useAuth = () => {
+  const user = useState<User | null>('auth.user', () => null)
+  const accessToken = useCookie('access_token', { 
+    default: () => '',
+    secure: true,
+    httpOnly: false,
+    sameSite: 'strict'
+  })
+
+  // API base URL from environment or default
   const config = useRuntimeConfig()
-  const user = ref<User | null>(null)
-  const token = ref<string | null>(null)
-  const isAuthenticated = computed(() => !!user.value && !!token.value)
+  const apiBaseUrl = config.public.apiBaseUrl || 'https://api.interestingapp.local'
 
-  // Initialize auth state from localStorage
-  const initAuth = () => {
-    if (process.client) {
-      const storedToken = localStorage.getItem('auth_token')
-      const storedUser = localStorage.getItem('auth_user')
-      
-      if (storedToken && storedUser) {
-        try {
-          // Check if token is still valid
-          const decoded = jwtDecode<JWTPayload>(storedToken)
-          const isExpired = decoded.exp * 1000 < Date.now()
-          
-          if (!isExpired) {
-            token.value = storedToken
-            user.value = JSON.parse(storedUser)
-          } else {
-            // Token expired, clear storage
-            clearAuth()
-          }
-        } catch (error) {
-          console.error('Invalid token:', error)
-          clearAuth()
-        }
-      }
-    }
-  }
-
-  // Login function
-  const login = async (credentials: LoginCredentials): Promise<{ success: boolean; error?: string }> => {
+  const login = async (email: string, password: string) => {
     try {
-      const { data } = await $fetch<AuthResponse>('/auth/login', {
-        baseURL: config.public.apiUrl,
+      const { data } = await $fetch<{ data: AuthTokens }>(`${apiBaseUrl}/auth/login`, {
         method: 'POST',
-        body: credentials,
+        body: {
+          email,
+          password
+        }
       })
 
-      if (data.access_token && data.user) {
-        token.value = data.access_token
-        user.value = data.user
-
-        // Store in localStorage
-        if (process.client) {
-          localStorage.setItem('auth_token', data.access_token)
-          localStorage.setItem('auth_user', JSON.stringify(data.user))
+      if (data.access_token) {
+        accessToken.value = data.access_token
+        
+        // Decode token to get user info
+        const decoded = jwtDecode<DecodedToken>(data.access_token)
+        user.value = {
+          id: decoded.sub,
+          email: decoded.email,
+          name: decoded.name,
+          role: decoded.role
         }
 
         return { success: true }
-      } else {
-        return { success: false, error: 'Invalid response from server' }
       }
+
+      return { success: false, error: 'Invalid credentials' }
     } catch (error: any) {
       console.error('Login error:', error)
       return { 
         success: false, 
-        error: error.data?.message || error.message || 'Login failed' 
+        error: error.data?.message || 'Login failed'
       }
     }
   }
 
-  // Logout function
-  const logout = () => {
-    clearAuth()
-    // Redirect to login page
-    if (process.client) {
-      navigateTo('/login')
-    }
-  }
-
-  // Clear authentication state
-  const clearAuth = () => {
-    user.value = null
-    token.value = null
-    
-    if (process.client) {
-      localStorage.removeItem('auth_token')
-      localStorage.removeItem('auth_user')
-    }
-  }
-
-  // Get authenticated headers for API requests
-  const getAuthHeaders = () => {
-    return token.value ? { Authorization: `Bearer ${token.value}` } : {}
-  }
-
-  // Fetch user profile (for verification)
-  const fetchProfile = async (): Promise<{ success: boolean; error?: string }> => {
+  const logout = async () => {
     try {
-      const profile = await $fetch('/auth/profile', {
-        baseURL: config.public.apiUrl,
-        headers: getAuthHeaders(),
-      })
-
-      if (profile) {
-        return { success: true }
-      } else {
-        clearAuth()
-        return { success: false, error: 'Invalid profile response' }
+      // Call logout endpoint if available
+      if (accessToken.value) {
+        await $fetch(`${apiBaseUrl}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken.value}`
+          }
+        })
       }
-    } catch (error: any) {
-      console.error('Profile fetch error:', error)
-      clearAuth()
-      return { 
-        success: false, 
-        error: error.data?.message || 'Profile fetch failed' 
-      }
-    }
-  }
-
-  // Verify token validity
-  const verifyToken = async (): Promise<boolean> => {
-    if (!token.value) return false
-
-    try {
-      const decoded = jwtDecode<JWTPayload>(token.value)
-      const isExpired = decoded.exp * 1000 < Date.now()
+    } catch (error) {
+      console.error('Logout error:', error)
+    } finally {
+      // Clear local state
+      accessToken.value = ''
+      user.value = null
       
-      if (isExpired) {
-        clearAuth()
+      // Redirect to login
+      await navigateTo('/login')
+    }
+  }
+
+  const refresh = async () => {
+    // TODO: Implement token refresh if needed
+    console.log('Token refresh not implemented yet')
+  }
+
+  const checkAuth = () => {
+    if (!accessToken.value) {
+      return false
+    }
+
+    try {
+      const decoded = jwtDecode<DecodedToken>(accessToken.value)
+      
+      // Check if token is expired
+      if (decoded.exp * 1000 < Date.now()) {
+        accessToken.value = ''
+        user.value = null
         return false
       }
 
-      // Also verify with server
-      const result = await fetchProfile()
-      return result.success
+      // Update user info from token
+      if (!user.value) {
+        user.value = {
+          id: decoded.sub,
+          email: decoded.email,
+          name: decoded.name,
+          role: decoded.role
+        }
+      }
+
+      return true
     } catch (error) {
-      console.error('Token verification error:', error)
-      clearAuth()
+      console.error('Token validation error:', error)
+      accessToken.value = ''
+      user.value = null
       return false
     }
   }
 
+  const isAuthenticated = computed(() => {
+    return !!user.value && !!accessToken.value
+  })
+
+  const isAdmin = computed(() => {
+    return user.value?.role === 'admin' || user.value?.role === 'superadmin'
+  })
+
   return {
     user: readonly(user),
-    token: readonly(token),
     isAuthenticated,
-    initAuth,
+    isAdmin,
     login,
     logout,
-    clearAuth,
-    getAuthHeaders,
-    fetchProfile,
-    verifyToken,
+    refresh,
+    checkAuth,
+    accessToken: readonly(accessToken)
   }
 }

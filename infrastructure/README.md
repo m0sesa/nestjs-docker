@@ -79,17 +79,19 @@ apt install mkcert
    ```bash
    # Add to /etc/hosts
    127.0.0.1 api.interestingapp.local
+   127.0.0.1 admin.interestingapp.local
    127.0.0.1 mail.interestingapp.local
    127.0.0.1 pgadmin.interestingapp.local
    127.0.0.1 traefik.interestingapp.local
    ```
 
 3. **Access services:**
+   - 🎨 **Admin Panel**: https://admin.interestingapp.local
    - 🚀 **API**: https://api.interestingapp.local
    - 📧 **MailHog**: https://mail.interestingapp.local
    - 🗄️ **Database Admin**: https://pgadmin.interestingapp.local
    - 📊 **Traefik Dashboard**: https://traefik.interestingapp.local (admin/admin)
-   - 📖 **Swagger**: https://api.interestingapp.local/api
+   - 📖 **Swagger**: https://api.interestingapp.local/api/docs
 
 ### Production Setup
 
@@ -115,10 +117,22 @@ apt install mkcert
 
 ```bash
 # Development Environment
-just dev-up        # Start development environment with HTTPS
-just dev-down      # Stop development environment  
-just dev-logs      # Follow development logs
-just dev-restart   # Restart development environment
+just dev-up            # Start development environment with HTTPS
+just dev-down          # Stop development environment (preserves data)
+just dev-down-clean    # Stop and remove all data (fresh start)
+just dev-logs          # Follow all development logs
+just dev-restart       # Restart development environment (preserves data)
+just dev-restart-clean # Restart with fresh data
+
+# Service-Specific Commands
+just dev-logs-app      # Follow app container logs
+just dev-logs-admin    # Follow admin panel logs  
+just dev-logs-db       # Follow database logs
+just dev-rebuild       # Rebuild all development containers
+just dev-rebuild-admin # Rebuild only admin panel container
+
+# Database Commands
+just db-reset          # Reset database (removes all data)
 
 # Production Environment
 just prod-up              # Start production (Traefik + App)

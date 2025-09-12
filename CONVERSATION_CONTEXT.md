@@ -14,7 +14,7 @@ This is a comprehensive **NestJS Docker Backend** project with complete producti
 
 ### **Complete Tech Stack:**
 - **Backend**: NestJS with TypeScript
-- **Admin Panel**: Nuxt 3 with Shadcn/ui components and Tailwind CSS
+- **Admin Panel**: Nuxt 4 with Shadcn/ui components and Tailwind CSS
 - **Mobile App**: Expo React Native with TypeScript and modern navigation
 - **Authentication**: JWT with Passport.js and bcrypt
 - **Database**: PostgreSQL 15 with TypeORM and UUID primary keys
@@ -35,15 +35,16 @@ This is a comprehensive **NestJS Docker Backend** project with complete producti
 │   ├── Dockerfile          # Multi-stage app container
 │   └── tsconfig.json       # TypeScript configuration
 │
-├── admin/                   # 🎨 Admin Panel Domain
-│   ├── pages/              # Nuxt 3 pages (dashboard, login, users)
+├── admin/                   # 🎨 Admin Panel Domain (Nuxt 4)
+│   ├── app/                # Nuxt app directory structure
+│   │   ├── pages/          # Admin pages (dashboard, users)
+│   │   ├── layouts/        # Admin panel layouts
+│   │   └── middleware/     # Route protection
 │   ├── components/ui/      # Shadcn/ui components
 │   ├── composables/        # Authentication and API logic
-│   ├── layouts/            # Admin panel layouts
-│   ├── middleware/         # Route protection
 │   ├── assets/css/         # Tailwind CSS and Shadcn variables
 │   ├── lib/                # Utility functions
-│   ├── nuxt.config.ts      # Nuxt configuration
+│   ├── nuxt.config.ts      # Nuxt 4 configuration
 │   ├── tailwind.config.js  # Tailwind configuration
 │   └── Dockerfile          # Multi-stage admin container
 │
@@ -93,7 +94,7 @@ This is a comprehensive **NestJS Docker Backend** project with complete producti
 │   ├── 12-environment-management.md
 │   ├── 13-security-best-practices.md
 │   ├── 14-troubleshooting.md
-│   └── 15-admin-panel.md       # Modern admin panel with Nuxt 3 and Shadcn/ui
+│   └── 15-admin-panel.md       # Modern admin panel with Nuxt 4 and Shadcn/ui
 │
 └── mobile-tutorials/        # 📱 Mobile App Tutorial Documentation
     ├── README.md          # Mobile tutorial index
@@ -142,11 +143,19 @@ This is a comprehensive **NestJS Docker Backend** project with complete producti
 - **Benefits**: Separation of concerns, easy maintenance, version control
 - **Structure**: Environment-specific route configurations
 
-### **6. Admin Panel Addition (Latest Extension)**
-- **Request**: "next lets add an admin panel that uses nuxt and shadcn"
-- **Implementation**: Nuxt 3 with Shadcn/ui components and Tailwind CSS
+### **6. Admin Panel Addition & Rebuild (Latest Extension)**
+- **Initial Request**: "next lets add an admin panel that uses nuxt and shadcn"
+- **Rebuild**: Removed old admin implementation, rebuilt with Nuxt 4
+- **Implementation**: Nuxt 4 with Shadcn/ui components and Tailwind CSS
 - **Integration**: JWT authentication with existing NestJS API
 - **Domain**: `admin.interestingapp.local` for development access
+- **Structure**: Uses Nuxt 4 app directory structure for better organization
+
+### **7. Recent API Improvements (Current Session)**
+- **CORS Configuration**: Added proper CORS settings to allow admin panel requests
+- **Development Flexibility**: Temporarily removed JWT guards for easier development
+- **Import Path Fixes**: Fixed Nuxt 4 composable import paths for proper module resolution
+- **Users Endpoint**: Fully functional CRUD operations for user management
 
 ## 📦 Package Installations by Phase
 
@@ -183,7 +192,7 @@ mkcert just dumb-init
 
 ### **Admin Panel:**
 ```bash
-# Nuxt 3 Framework
+# Nuxt 4 Framework
 nuxt vue vue-router
 
 # UI Components & Styling

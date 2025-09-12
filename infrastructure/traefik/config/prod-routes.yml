@@ -11,6 +11,17 @@ http:
       middlewares:
         - secure-headers
 
+    # Admin Panel
+    admin-panel:
+      rule: "Host(`admin.${DOMAIN}`)"
+      entryPoints:
+        - websecure
+      service: admin-panel
+      tls:
+        certResolver: letsencrypt
+      middlewares:
+        - secure-headers
+
     # Traefik Dashboard (secured)
     traefik-dashboard:
       rule: "Host(`traefik.${DOMAIN}`)"
@@ -28,6 +39,11 @@ http:
       loadBalancer:
         servers:
           - url: "http://nestjs-app-prod:3000"
+
+    admin-panel:
+      loadBalancer:
+        servers:
+          - url: "http://admin-panel-prod:3000"
 
   middlewares:
     basic-auth:

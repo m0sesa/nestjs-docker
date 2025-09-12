@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -28,6 +26,20 @@ services:
       - ../init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - app-network
+
+  admin:
+    build:
+      context: ../../admin
+      target: production
+    container_name: admin-panel-prod
+    restart: unless-stopped
+    environment:
+      - NUXT_PUBLIC_API_BASE_URL=${ADMIN_API_URL:-https://api.yourdomain.com}
+      - NODE_ENV=production
+    depends_on:
+      - app
+    networks:
+      - traefik
 
 volumes:
   postgres_data:
